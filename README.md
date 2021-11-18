@@ -44,7 +44,10 @@ src file contains thesis-related python scripts and the necessary script to trai
 By default, seabirds dataset will be trained. This can be done by running data_processing_seabirds.py 
 data_processing.py containes the code to train a two-stage transfer learning model based on the YTVIS dataset. Keep in mind folder strucutre expected to do so.
 
-inference.py runs testing on YTVIS dataset. It can be edited to run inference with the seabirds model. By default, data_processing_seabirds.py automatically not only trains but also runs inference on a randomly assigned 500 images sample from sequence_sampled folder.
+inference.py runs testing on YTVIS dataset. It can be edited to run inference with the seabirds model. By default, data_processing_seabirds.py automatically not only trains but also runs inference on a randomly assigned 500 images sample from sequence_sampled folder.In case only running inference for the seabirds data
+set is desired, one option is to edit the data_processing_seabirds.py lines wher
+e the training is done. Needless to say, for this to work the final_model.pth is
+ expected to be found on the output folder. 
 
 Data can be found in data folder within juan.vallado user folder.
 
