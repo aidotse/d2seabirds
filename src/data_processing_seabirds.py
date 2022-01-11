@@ -21,15 +21,20 @@ from detectron2.data import MetadataCatalog, DatasetCatalog
 import pycocotools
 from PIL import Image, ImageDraw
 import numpy as np
-import ipdb
+#import ipdb
 from detectron2.structures import BoxMode
 from detectron2.engine import DefaultTrainer
 import detectron2.data.transforms as T
 from detectron2.data import DatasetMapper
 from detectron2.data.datasets import register_coco_instances
 
-coco_path_ann = "/home/juan.vallado/data/annotations_SLU.json"
-img_path = "/home/juan.vallado/data/sequences_sampled/"
+import sys
+
+#coco_path_ann = "/home/juan.vallado/data/annotations_SLU.json"
+#img_path = "/home/juan.vallado/data/sequences_sampled/"
+coco_path_ann = "/home/erik.svensson/data/annotations_SLU.json"
+img_path = "/home/erik.svensson/data/sequences_sampled/"
+
 # Prepare dataloader for transformations
 register_coco_instances("seabirds_train", {}, coco_path_ann, img_path)
 seabirds_metadata = MetadataCatalog.get("seabirds_train")
@@ -70,7 +75,8 @@ cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2  # only has one class (ballon). (see https:/
 cfg.INPUT.MASK_FORMAT="bitmask"
 
 # NOTE: this config means the number of classes, but a few popular unofficial tutorials incorrect uses num_classes+1 here.
-cfg.OUTPUT_DIR = "/home/appuser/output"
+#cfg.OUTPUT_DIR = "/home/appuser/output"
+cfg.OUTPUT_DIR = "/home/erik.svensson/output"
 '''
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 trainer = DefaultTrainer(cfg) 
@@ -86,14 +92,25 @@ predictor = DefaultPredictor(cfg)
 from detectron2.utils.visualizer import ColorMode
 dataset_dicts = datset
 imgs=[]
-folder = "/home/juan.vallado/data/sequences_sampled/"
+#folder = "/home/juan.vallado/data/sequences_sampled/"
+folder = "/home/erik.svensson/data/sequences_sampled/"
 ims=os.listdir(folder)
-ipdb.set_trace()
-for img in random.sample(ims, 500):
+
+#ipdb.set_trace()
+
+for img in random.sample(ims, 10):
+    print(img)
     file = os.path.join(folder, img)
+    print(file)
     im = np.array(Image.open(file).convert('RGB'))
     im = im[:,:,::-1]# to bgr
     outputs = predictor(im)
+    print(type(outputs))
+    print(type(outputs['instances']))
+    print(outputs['instances'].scores)
+    print(outputs['instances'].pred_classes)
+    print(outputs['instances'].pred_boxes)
+    sys.exit()
     v = Visualizer(im[:,:,::-1],
         metadata=seabirds_metadata,
         scale=0.5,
@@ -102,8 +119,19 @@ for img in random.sample(ims, 500):
     out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
     imgs.append(out.get_image()[:, :, ::-1])
 
+#print("koko")
+#sys.exit()
+
+
 for i in range (0, len(imgs)):
-    cv2.imwrite("/home/appuser/output/{}sb.jpg".format(i), imgs[i])
+    #cv2.imwrite("/home/appuser/output/filename.png", imgs[i])
+    #print(type(imgs[i]))
+    #path_i = "/home/appuser/output/{}sb.jpg".format(i)
+    #print(path_i)
+    print(imgs[i].shape)
+    cv2.imwrite("../erik.svensson/output/{}sb.jpg".format(i), imgs[i])
+    #cv2.imwrite("/home/appuser/output/{}sb.jpg".format(i), imgs[i])
+    #cv2.imwrite("/home/appuser/{}sb.jpg".format(i), imgs[i])
 
 
 
@@ -119,4 +147,3 @@ for image in os.listdir(ino):
     ))
 '''
 
-    
