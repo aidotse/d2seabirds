@@ -92,6 +92,7 @@ predictor = DefaultPredictor(cfg)
 from detectron2.utils.visualizer import ColorMode
 dataset_dicts = datset
 imgs=[]
+res=[]
 #folder = "/home/juan.vallado/data/sequences_sampled/"
 folder = "/home/erik.svensson/data/sequences_sampled/"
 ims=os.listdir(folder)
@@ -99,18 +100,18 @@ ims=os.listdir(folder)
 #ipdb.set_trace()
 
 for img in random.sample(ims, 10):
-    print(img)
     file = os.path.join(folder, img)
-    print(file)
+
     im = np.array(Image.open(file).convert('RGB'))
     im = im[:,:,::-1]# to bgr
     outputs = predictor(im)
-    print(type(outputs))
-    print(type(outputs['instances']))
-    print(outputs['instances'].scores)
-    print(outputs['instances'].pred_classes)
-    print(outputs['instances'].pred_boxes)
-    sys.exit()
+
+    resi = dict()
+    resi["pred_classes"] = outputs['instances'].pred_classes.cpu().detach().numpy()
+    resi["scores"] = outputs['instances'].scores.cpu().detach().numpy()
+    resi["pred_boxes"] = outputs['instances'].pred_boxes.tensor.cpu().detach().numpy()
+    res.append(resi)
+
     v = Visualizer(im[:,:,::-1],
         metadata=seabirds_metadata,
         scale=0.5,
@@ -119,20 +120,14 @@ for img in random.sample(ims, 10):
     out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
     imgs.append(out.get_image()[:, :, ::-1])
 
-#print("koko")
-#sys.exit()
-
-
+import pickle
 for i in range (0, len(imgs)):
-    #cv2.imwrite("/home/appuser/output/filename.png", imgs[i])
-    #print(type(imgs[i]))
-    #path_i = "/home/appuser/output/{}sb.jpg".format(i)
-    #print(path_i)
     print(imgs[i].shape)
     cv2.imwrite("../erik.svensson/output/{}sb.jpg".format(i), imgs[i])
-    #cv2.imwrite("/home/appuser/output/{}sb.jpg".format(i), imgs[i])
-    #cv2.imwrite("/home/appuser/{}sb.jpg".format(i), imgs[i])
 
+    f = open("../erik.svensson/output/{}sb.pkl".format(i), "wb")
+    pickle.dump(res[i],f)
+    f.close()    
 
 
 '''
