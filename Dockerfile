@@ -1,25 +1,29 @@
-FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
+#FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.5.0-cudnn8-devel-ubuntu18.04
+#FROM nvidia/cuda:11.5.0-cudnn8-devel-ubuntu20.04
+
 # use an older system (18.04) to avoid opencv incompatibility (issue#3524)
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y \
-	python3-opencv ca-certificates python3-dev \
+        python3-opencv ca-certificates python3-dev \
         python3-pip git wget sudo ninja-build cmake
 #RUN ln -sv /usr/bin/python3 /usr/bin/python
 
-##RUN sudo apt-get update && sudo apt-get install -y vim
-## create a non-root user
-ARG u_id
-ARG g_id
-ARG username
+# ##RUN sudo apt-get update && sudo apt-get install -y vim
+# ## create a non-root user
+# ARG u_id
+# ARG g_id
+# ARG username
 
-RUN groupadd --gid ${g_id} ${username}
-RUN useradd --uid ${u_id} --gid ${g_id} --shell /bin/bash --create-home ${username}
-USER ${username}
-RUN chown -R ${u_id}:${g_id} /home/${username}
-RUN chmod -R  755 /home/${username}
+# RUN groupadd --gid ${g_id} ${username}
+# RUN useradd --uid ${u_id} --gid ${g_id} --shell /bin/bash --create-home ${username}
+# #RUN usermod -a -G video ${username}
+# USER ${username}
+# RUN chown -R ${u_id}:${g_id} /home/${username}
+# RUN chmod -R  755 /home/${username}
 
-WORKDIR /home/${username}
+# WORKDIR /home/${username}
 
 #ARG USER_ID=1000
 #RUN useradd -m --no-log-init --system  --uid ${USER_ID} appuser -g sudo
@@ -44,6 +48,7 @@ RUN python3 -m pip install --upgrade pip
 #RUN pip install --user tensorboard cmake   # cmake from apt-get is too old
 RUN pip3 install --user tensorboard
 RUN pip3 install --user torch==1.10 torchvision==0.11.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+#RUN pip3 install --user torch torchvision
 
 RUN pip3 install --user 'git+https://github.com/facebookresearch/fvcore'
 # install detectron2
@@ -78,3 +83,4 @@ ENV FVCORE_CACHE="/tmp"
 #CMD sudo sh /home/juan.vallado/src/commands.sh
 #CMD sudo sh /home/erik.svensson/git/ai_sweden/d2seabirds/src/commands.sh
 
+WORKDIR /app
